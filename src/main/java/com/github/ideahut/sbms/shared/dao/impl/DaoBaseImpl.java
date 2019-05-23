@@ -9,7 +9,6 @@ import java.util.List;
 
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
-import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.ScrollMode;
 import org.hibernate.ScrollableResults;
@@ -19,6 +18,7 @@ import org.hibernate.criterion.Example;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.query.Query;
 import org.hibernate.transform.Transformers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.SessionFactoryUtils;
@@ -32,7 +32,8 @@ import com.github.ideahut.sbms.shared.hibernate.ExampleHelper;
 import com.github.ideahut.sbms.shared.hibernate.OrderSpec;
 import com.github.ideahut.sbms.shared.hibernate.OrderSpecTranslator;
 
-@SuppressWarnings({"deprecation", "unchecked", "rawtypes"})
+@Deprecated
+@SuppressWarnings({"unchecked", "rawtypes"})
 public abstract class DaoBaseImpl<ET extends EntityBase<ID>, ID extends Serializable> implements DaoBase<ET, ID> {
 	
 	@Autowired(required = false)

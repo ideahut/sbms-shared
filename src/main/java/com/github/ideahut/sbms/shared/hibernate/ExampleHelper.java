@@ -16,6 +16,8 @@ public class ExampleHelper {
 	
 	private static final Map<Class<?>, Set<String>> mapNotNullableString = new HashMap<Class<?>, Set<String>>(); 
 	
+	private ExampleHelper() {}
+	
 	public static void initializeEntityField(Class<?> entityClass) {
 		if (mapNotNullableString.containsKey(entityClass)) {
 			return;
