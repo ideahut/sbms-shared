@@ -11,6 +11,35 @@
 
 	<name>sbms-shared</name>
 	<description>Shared library for microservice (Spring Boot)</description>
+	<url>https://github.com/ideahut/sbms-shared</url>
+
+	<licenses>
+		<license>
+			<name>Apache License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+	
+	<scm>
+		<developerConnection>scm:git:ssh://github.com/ideahut/sbms-shared.git</developerConnection>
+		<connection>${project.scm.developerConnection}</connection>
+		<url>${project.url}</url>
+	</scm>
+	
+	<developers>
+		<developer>
+			<id>thomson.na7pulu</id>
+			<name>Thomson Napitupulu</name>
+			<email>thomson.na7pulu@gmail.com</email>
+			<organization>Ideahut</organization>
+			<organizationUrl>https://github.com/ideahut</organizationUrl>
+			<roles>
+				<role>architect</role>
+				<role>developer</role>
+			</roles>
+		</developer>
+	</developers>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -73,7 +102,7 @@
 		    -->
 		</dependency>
 		
-		<!-- REDIS -->		
+		<!-- REDIS -->
 		<dependency>
 		    <groupId>org.springframework.data</groupId>
 		    <artifactId>spring-data-redis</artifactId>
