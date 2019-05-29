@@ -14,13 +14,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 @SuppressWarnings("serial")
 @MappedSuperclass
 public abstract class EntityTime <ID extends Serializable> extends EntityBase<ID> {
-	
-	protected static final String COLUMN_CREATED	= "CREATED_AT_";
-	protected static final String COLUMN_UPDATED	= "UPDATED_AT_";
-	
-	public static final String FIELD_CREATED 		= "createdAt";
-	public static final String FIELD_UPDATED		= "updatedAt";
-	
+		
 	private Date createdAt;
 	
 	private Date updatedAt;

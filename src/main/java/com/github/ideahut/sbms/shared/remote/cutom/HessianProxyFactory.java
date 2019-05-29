@@ -30,7 +30,11 @@ public class HessianProxyFactory extends com.caucho.hessian.client.HessianProxyF
 	
 	public Set<String> headerKeys() {
 		return headers.keySet();
-	}	
+	}
+	
+	public void clearHeader() {
+		headers.clear();
+	}
 	
 	@Override
 	public Object create(String url) throws MalformedURLException, ClassNotFoundException {

@@ -10,7 +10,10 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 public abstract class RequestUtil {
-
+	
+	/*
+	 * GET REQUEST
+	 */
 	public static HttpServletRequest getRequest() {
 		RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
 		if (requestAttributes == null) {
@@ -19,6 +22,9 @@ public abstract class RequestUtil {
 		return ((ServletRequestAttributes)requestAttributes).getRequest();
 	}
 	
+	/*
+	 * GET HEADER
+	 */
 	public static String getHeader(HttpServletRequest request, String name) {
 		String value = request.getHeader(name);
 		if (value == null) {

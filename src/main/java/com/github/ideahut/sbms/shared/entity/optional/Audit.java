@@ -18,11 +18,15 @@ import com.github.ideahut.sbms.shared.entity.EntityStringId;
 @SuppressWarnings("serial")
 public class Audit extends EntityStringId {
 
-	private String auditor;
+	private String auditorId;
+	
+	private String auditorName;
 	
 	private String action;
 	
-	private String classname;
+	private String info;
+	
+	private String type;	
 	
 	private String content;
 	
@@ -31,16 +35,25 @@ public class Audit extends EntityStringId {
 	private Date entry;
 
 	
-	@Column(name = "auditor_")
-	public String getAuditor() {
-		return auditor;
+	@Column(name = "auditorid_")
+	public String getAuditorId() {
+		return auditorId;
 	}
 
-	public void setAuditor(String auditor) {
-		this.auditor = auditor;
+	public void setAuditorId(String auditorId) {
+		this.auditorId = auditorId;
 	}
 
-	@Column(name = "action_", length = 100)
+	@Column(name = "auditorname_")
+	public String getAuditorName() {
+		return auditorName;
+	}
+
+	public void setAuditorName(String auditorName) {
+		this.auditorName = auditorName;
+	}
+
+	@Column(name = "action_")
 	public String getAction() {
 		return action;
 	}
@@ -48,14 +61,23 @@ public class Audit extends EntityStringId {
 	public void setAction(String action) {
 		this.action = action;
 	}
-
-	@Column(name = "classname_")
-	public String getClassname() {
-		return classname;
+	
+	@Column(name = "info_")
+	public String getInfo() {
+		return info;
 	}
 
-	public void setClassname(String classname) {
-		this.classname = classname;
+	public void setInfo(String info) {
+		this.info = info;
+	}
+
+	@Column(name = "type_")
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 
 	@Lob

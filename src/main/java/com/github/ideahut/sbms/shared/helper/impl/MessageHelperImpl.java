@@ -14,14 +14,14 @@ import org.springframework.web.servlet.LocaleResolver;
 
 import com.github.ideahut.sbms.client.dto.CodeMessageDto;
 import com.github.ideahut.sbms.shared.helper.MessageHelper;
+import com.github.ideahut.sbms.shared.moment.MomentAttributes;
+import com.github.ideahut.sbms.shared.moment.MomentHolder;
 
 public class MessageHelperImpl implements MessageHelper, InitializingBean {
 	
 	private MessageSource messageSource;
 	
 	private LocaleResolver localeResolver;
-	
-	private boolean checkArguments = false;
 	
 	// Untuk service exporter yang tidak memiliki HttpServletRequest seperti RMI
 	private List<Locale> supportedLocales;	
@@ -34,10 +34,6 @@ public class MessageHelperImpl implements MessageHelper, InitializingBean {
 
 	public void setLocaleResolver(LocaleResolver localeResolver) {
 		this.localeResolver = localeResolver;
-	}
-	
-	public void setCheckArguments(boolean checkArguments) {
-		this.checkArguments = checkArguments;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -58,13 +54,14 @@ public class MessageHelperImpl implements MessageHelper, InitializingBean {
 	public Locale getLocale() {
 		HttpServletRequest request = getRequest();
 		if (request != null) {
-			return localeResolver.resolveLocale(getRequest());
+			return localeResolver.resolveLocale(request);
 		}
 		Locale primaryLocale = this.defaultLocale;
 		if (primaryLocale == null) {
 			primaryLocale = Locale.getDefault();
 		}
-		String language = MessageHelper.LanguageHolder.get();
+		MomentAttributes momentAttributes = MomentHolder.getMomentAttributes();
+		String language = momentAttributes != null ? momentAttributes.getLanguage() : null;
 		if (language == null || language.isEmpty()) {
 			return primaryLocale;
 		}
@@ -73,9 +70,9 @@ public class MessageHelperImpl implements MessageHelper, InitializingBean {
 	}
 	
 	@Override
-	public String getMessage(String code, String... args) {
+	public String getMessage(String code, boolean checkArgs, String... args) {
 		Locale locale = getLocale();
-		if (!checkArguments) {
+		if (!checkArgs) {
 			return messageSource.getMessage(code, args, locale);
 		}
 		String[] newArgs = new String[args.length];
@@ -84,12 +81,23 @@ public class MessageHelperImpl implements MessageHelper, InitializingBean {
 		}
 		return messageSource.getMessage(code, newArgs, locale);
 	}
+	
+	@Override
+	public String getMessage(String code, String... args) {
+		return getMessage(code, false, args);
+	}
+	
+	@Override
+	public CodeMessageDto getCodeMessage(String code, boolean checkArgs, String... args) {
+		String message = getMessage(code, checkArgs, args); 
+		return new CodeMessageDto(code, message);
+	}
 
 	@Override
 	public CodeMessageDto getCodeMessage(String code, String... args) {
-		String message = getMessage(code, args); 
-		return new CodeMessageDto(code, message);
+		return getCodeMessage(code, false, args);
 	}
+	
 	
 	private HttpServletRequest getRequest() {
 		RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();

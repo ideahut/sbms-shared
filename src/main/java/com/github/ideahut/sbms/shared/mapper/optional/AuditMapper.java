@@ -12,7 +12,7 @@ import com.github.ideahut.sbms.shared.repo.optional.AuditRepository;
 public class AuditMapper extends EntityDtoMapper<Audit, AuditDto> {
 	
 	@Autowired
-	private AuditRepository auditRepo;
+	private AuditRepository auditRepository;
 
 	@Override
 	public AuditDto toDto(Audit entity) {
@@ -21,12 +21,14 @@ public class AuditMapper extends EntityDtoMapper<Audit, AuditDto> {
 		}
 		AuditDto dto = new AuditDto();
 		dto.setAction(entity.getAction());
-		dto.setAuditor(entity.getAuditor());
+		dto.setAuditorId(entity.getAuditorId());
+		dto.setAuditorName(entity.getAuditorName());
 		dto.setBytes(entity.getBytes());
-		dto.setClassname(entity.getClassname());
 		dto.setContent(entity.getContent());
 		dto.setEntry(entity.getEntry());
 		dto.setId(entity.getId());
+		dto.setInfo(entity.getInfo());
+		dto.setType(entity.getType());
 		return dto;
 	}
 
@@ -35,14 +37,15 @@ public class AuditMapper extends EntityDtoMapper<Audit, AuditDto> {
 		if (null == dto) {
 			return null;
 		}
-		Audit entity = null != dto.getId() ? auditRepo.findById(dto.getId()).orElse(null) : null;
-		if (null == entity) entity = new Audit();
+		Audit entity = null != dto.getId() ? auditRepository.findById(dto.getId()).orElse(new Audit()) : new Audit();
 		entity.setAction(dto.getAction());
-		entity.setAuditor(dto.getAuditor());
+		entity.setAuditorId(dto.getAuditorId());
+		entity.setAuditorName(dto.getAuditorName());
 		entity.setBytes(dto.getBytes());
-		entity.setClassname(dto.getClassname());
 		entity.setContent(dto.getContent());
-		entity.setEntry(dto.getEntry());	
+		entity.setEntry(dto.getEntry());
+		entity.setInfo(dto.getInfo());
+		entity.setType(dto.getType());	
 		return entity;
 	}
 

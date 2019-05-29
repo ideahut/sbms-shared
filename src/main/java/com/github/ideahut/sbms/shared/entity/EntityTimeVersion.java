@@ -10,11 +10,9 @@ import javax.persistence.Version;
 @MappedSuperclass
 public abstract class EntityTimeVersion<ID extends Serializable> extends EntityTime<ID> {
 
-	public static final String FIELD_VERSION	= EntityVersion.FIELD_VERSION;
-	
 	private Long version;
 
-	@Column(name = EntityVersion.COLUMN_VERSION, nullable = false)
+	@Column(name = COLUMN_VERSION, nullable = false)
 	@Version
 	public Long getVersion() {
 		return version;

@@ -3,6 +3,7 @@ package com.github.ideahut.sbms.shared.remote.service;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -26,35 +27,69 @@ public abstract class ServiceExporterBase {
 	
 	private static final ThreadLocal<RemoteExporter> exporterHolder = new ThreadLocal<RemoteExporter>();
 	
-	private static final Class<?> _Hessian2Input;
-	private static final Class<?> _HessianInput;
-	private static final Class<?> _HessianRemoteResolver;
-	private static final Class<?> _SerializerFactory;
-	private static final Class<?> _AbstractSkeleton;
 	private static final boolean isHessianAvailable;
+	private static final __HessianClasses__ HessianClasses;
+	private static final __Hessian2Input__ Hessian2Input;
+	private static final __HessianInput__ HessianInput;
+	private static final __AbstractHessianInput__ AbstractHessianInput;
+	private static final __HessianExporter__ HessianExporter;
+	private static final __HttpInvokerServiceExporter__ HttpInvokerServiceExporter;
 	
 	static {
-		boolean hessianExist = false;
-		Class<?>[] hessianClasses = new Class<?>[5];
+		boolean hessianExists = false;
+		HessianClasses = new __HessianClasses__(); 
 		try {
-			hessianClasses = new Class<?>[] {
-				Class.forName("com.caucho.hessian.io.Hessian2Input"),
-				Class.forName("com.caucho.hessian.io.HessianInput"),
-				Class.forName("com.caucho.hessian.io.HessianRemoteResolver"),
-				Class.forName("com.caucho.hessian.io.SerializerFactory"),
-				Class.forName("com.caucho.services.server.AbstractSkeleton")
-			};			
-			hessianExist = true;
+			HessianClasses.AbstractHessianInput = Class.forName("com.caucho.hessian.io.AbstractHessianInput");
+			HessianClasses.Hessian2Input = Class.forName("com.caucho.hessian.io.Hessian2Input");
+			HessianClasses.HessianInput = Class.forName("com.caucho.hessian.io.HessianInput");
+			HessianClasses.HessianRemoteResolver = Class.forName("com.caucho.hessian.io.HessianRemoteResolver");
+			HessianClasses.SerializerFactory = Class.forName("com.caucho.hessian.io.SerializerFactory");
+			HessianClasses.AbstractSkeleton = Class.forName("com.caucho.services.server.AbstractSkeleton");
+			hessianExists = true;
 		} catch (Exception e) {
-			hessianClasses = new Class<?>[5];
-			hessianExist = false;
+			hessianExists = false;
 		}
-		_Hessian2Input = hessianClasses[0];
-		_HessianInput = hessianClasses[1];
-		_HessianRemoteResolver = hessianClasses[2];
-		_SerializerFactory = hessianClasses[3];
-		_AbstractSkeleton = hessianClasses[4];
-		isHessianAvailable = hessianExist;
+		isHessianAvailable = hessianExists;
+		
+		HessianExporter = new __HessianExporter__();
+		AbstractHessianInput = new __AbstractHessianInput__();
+		Hessian2Input = new __Hessian2Input__();
+		HessianInput = new __HessianInput__();
+		
+		if (isHessianAvailable) {
+			try {
+				HessianExporter.serializerFactory = HessianExporter.class.getDeclaredField("serializerFactory");
+				HessianExporter.serializerFactory.setAccessible(true);
+				HessianExporter.remoteResolver = HessianExporter.class.getDeclaredField("remoteResolver");
+				HessianExporter.remoteResolver.setAccessible(true);
+				HessianExporter.skeleton = HessianExporter.class.getDeclaredField("skeleton");
+				HessianExporter.skeleton.setAccessible(true);
+				HessianExporter._methodMap = HessianClasses.AbstractSkeleton.getDeclaredField("_methodMap");
+				HessianExporter._methodMap.setAccessible(true);
+				
+				Hessian2Input.constructor = HessianClasses.Hessian2Input.getConstructor(InputStream.class);
+				Hessian2Input.readCall = HessianClasses.Hessian2Input.getMethod("readCall");				
+				
+				HessianInput.constructor = HessianClasses.HessianInput.getConstructor(InputStream.class);				
+				
+				AbstractHessianInput.setSerializerFactory = HessianClasses.AbstractHessianInput.getMethod("setSerializerFactory", HessianClasses.SerializerFactory);
+				AbstractHessianInput.setRemoteResolver = HessianClasses.AbstractHessianInput.getMethod("setRemoteResolver", HessianClasses.HessianRemoteResolver);
+				AbstractHessianInput.skipOptionalCall = HessianClasses.AbstractHessianInput.getMethod("skipOptionalCall");
+				AbstractHessianInput.readMethod = HessianClasses.AbstractHessianInput.getMethod("readMethod");
+				AbstractHessianInput.readMethodArgLength = HessianClasses.AbstractHessianInput.getMethod("readMethodArgLength");
+				
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		}
+		
+		HttpInvokerServiceExporter = new __HttpInvokerServiceExporter__();
+		try {
+			HttpInvokerServiceExporter.readRemoteInvocation = HttpInvokerServiceExporter.class.getDeclaredMethod("readRemoteInvocation", HttpServletRequest.class);
+			HttpInvokerServiceExporter.readRemoteInvocation.setAccessible(true);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 	
 	
@@ -130,46 +165,38 @@ public abstract class ServiceExporterBase {
 					if (major != 0x02) {
 						throw new IOException("Version " + major + '.' + minor + " is not understood");
 					}
-					in = _Hessian2Input.getConstructor(InputStream.class).newInstance(is);
-					_Hessian2Input.getMethod("readCall").invoke(in);
+					in = Hessian2Input.constructor.newInstance(is);
+					Hessian2Input.readCall.invoke(is);
 				}
 				else if (code == 'C') {
 					is.reset();
-					in = _Hessian2Input.getConstructor(InputStream.class).newInstance(is);
-					_Hessian2Input.getMethod("readCall").invoke(in);
+					in = Hessian2Input.constructor.newInstance(is);
+					Hessian2Input.readCall.invoke(is);
 				}
 				else if (code == 'c') {
 					major = is.read();
 					minor = is.read();
-					in = _HessianInput.getConstructor(InputStream.class).newInstance(is);
+					in = HessianInput.constructor.newInstance(is);
 				}
 				else {
 					throw new IOException("Expected 'H'/'C' (Hessian 2.0) or 'c' (Hessian 1.0) in hessian input at " + code);
 				}
-				Field field = HessianExporter.class.getDeclaredField("serializerFactory");
-				field.setAccessible(true);
-				Object serializerFactory = field.get(exporter);
-				field = HessianExporter.class.getDeclaredField("remoteResolver");
-				field.setAccessible(true);
-				Object remoteResolver = field.get(exporter);
-				field = HessianExporter.class.getDeclaredField("skeleton");
-				field.setAccessible(true);
-				Object skeleton = field.get(exporter);
+				Object serializerFactory = HessianExporter.serializerFactory.get(exporter);
+				Object remoteResolver = HessianExporter.remoteResolver.get(exporter);
+				Object skeleton = HessianExporter.skeleton.get(exporter);
 				
-				Class<?> classIn = in.getClass(); 
-				classIn.getMethod("setSerializerFactory", _SerializerFactory).invoke(in, serializerFactory);
+				AbstractHessianInput.setSerializerFactory.invoke(in, serializerFactory);
 				if (remoteResolver != null) {
-					classIn.getMethod("setRemoteResolver", _HessianRemoteResolver).invoke(in, remoteResolver);
+					AbstractHessianInput.setRemoteResolver.invoke(in, remoteResolver);
 				}
 				
-				classIn.getMethod("skipOptionalCall").invoke(in);
-				String methodName = (String)classIn.getMethod("readMethod").invoke(in);
-			    int argLength = (int)classIn.getMethod("readMethodArgLength").invoke(in);
+				AbstractHessianInput.skipOptionalCall.invoke(in);
 				
-			    field = _AbstractSkeleton.getDeclaredField("_methodMap");
-			    field.setAccessible(true);
+				String methodName = (String)AbstractHessianInput.readMethod.invoke(in);
+			    int argLength = (int)AbstractHessianInput.readMethodArgLength.invoke(in);
+				
 			    @SuppressWarnings("rawtypes")
-				HashMap map = (HashMap)field.get(skeleton);
+				HashMap map = (HashMap)HessianExporter._methodMap.get(skeleton);
 			    		
 			    method = (Method)map.get(methodName + "__" + argLength);
 			    if (method == null) {
@@ -185,9 +212,7 @@ public abstract class ServiceExporterBase {
 		} else if (handler instanceof HttpInvokerServiceExporter) {
 			Assert.isInstanceOf(RequestWrapper.class, request);
 			HttpInvokerServiceExporter exporter = (HttpInvokerServiceExporter)handler;
-			Method readRemoteInvocation = HttpInvokerServiceExporter.class.getDeclaredMethod("readRemoteInvocation", HttpServletRequest.class);
-			readRemoteInvocation.setAccessible(true);
-			RemoteInvocation remoteInvocation = (RemoteInvocation)readRemoteInvocation.invoke(exporter, request);
+			RemoteInvocation remoteInvocation = (RemoteInvocation)HttpInvokerServiceExporter.readRemoteInvocation.invoke(exporter, request);
 			method = exporter.getServiceInterface().getMethod(remoteInvocation.getMethodName(), remoteInvocation.getParameterTypes());
 		}
 		return method;
@@ -222,6 +247,44 @@ public abstract class ServiceExporterBase {
 	
 	public static void resetRemoteExporter() {
 		exporterHolder.remove();
+	}
+	
+	
+	
+	
+	
+	// Shadow classes :D
+	
+	private static class __HessianClasses__ {
+		private Class<?> AbstractHessianInput;
+		private Class<?> Hessian2Input;
+		private Class<?> HessianInput;
+		private Class<?> HessianRemoteResolver;
+		private Class<?> SerializerFactory;
+		private Class<?> AbstractSkeleton;
+	}	
+	private static class __HessianExporter__ {
+		private Field serializerFactory;
+		private Field remoteResolver;
+		private Field skeleton;
+		private Field _methodMap;
+	}
+	private static class __Hessian2Input__ {
+		private Constructor<?> constructor;
+		private Method readCall;			
+	}
+	private static class __HessianInput__ {
+		private Constructor<?> constructor;
+	}
+	private static class __AbstractHessianInput__ {
+		private Method setSerializerFactory;
+		private Method setRemoteResolver;
+		private Method skipOptionalCall;
+		private Method readMethod;
+		private Method readMethodArgLength;		
+	}	
+	private static class __HttpInvokerServiceExporter__ {
+		private Method readRemoteInvocation;
 	}
 
 }

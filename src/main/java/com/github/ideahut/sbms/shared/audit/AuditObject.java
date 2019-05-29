@@ -2,11 +2,17 @@ package com.github.ideahut.sbms.shared.audit;
 
 import java.util.Date;
 
+import org.springframework.transaction.PlatformTransactionManager;
+
 public class AuditObject {
 	
-	private String auditor;
+	private PlatformTransactionManager transactionManager;
+	
+	private Auditor auditor;
 	
 	private String action;
+	
+	private String info;
 	
 	private Object object;
 	
@@ -14,17 +20,30 @@ public class AuditObject {
 	
 	public AuditObject() {}
 	
-	public AuditObject(String auditor, String action, Object object) {
+	public AuditObject(String action, Object object, Auditor auditor, String info) {
+		this.action = action;
+		this.object = object;
 		this.auditor = auditor;
-		this.action  = action;
-		this.object  = object;
+		this.info = info;
+	}
+	
+	public AuditObject(String action, Object object, Auditor auditor) {
+		this(action, object, auditor, null);
+	}
+	
+	public AuditObject(String action, Object object, String info) {
+		this(action, object, null, info);
+	}
+	
+	public AuditObject(String action, Object object) {
+		this(action, object, null, null);
 	}
 
-	public String getAuditor() {
+	public Auditor getAuditor() {
 		return auditor;
 	}
 
-	public void setAuditor(String auditor) {
+	public void setAuditor(Auditor auditor) {
 		this.auditor = auditor;
 	}
 
@@ -34,6 +53,14 @@ public class AuditObject {
 
 	public void setAction(String action) {
 		this.action = action;
+	}
+
+	public String getInfo() {
+		return info;
+	}
+
+	public void setInfo(String info) {
+		this.info = info;
 	}
 
 	public Object getObject() {
@@ -51,5 +78,13 @@ public class AuditObject {
 	public void setEntry(Date entry) {
 		this.entry = entry;
 	}
+
+	public PlatformTransactionManager getTransactionManager() {
+		return transactionManager;
+	}
+
+	public void setTransactionManager(PlatformTransactionManager transactionManager) {
+		this.transactionManager = transactionManager;
+	}	
 	
 }

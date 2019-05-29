@@ -13,4 +13,8 @@ public @interface Auditable {
 
 	public boolean value() default true;
 	
+	boolean enableIndexes() default false;
+	
+	boolean enableRowId() default true;
+	
 }

@@ -9,11 +9,6 @@ import javax.persistence.Version;
 @SuppressWarnings("serial")
 @MappedSuperclass
 public abstract class EntityVersion<ID extends Serializable> extends EntityBase<ID> {
-
-	protected static final String COLUMN_VERSION	= "VERSION_";
-	
-	public static final String FIELD_VERSION		= "version";
-	
 	
 	private Long version;
 
