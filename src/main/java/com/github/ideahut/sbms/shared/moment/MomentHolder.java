@@ -35,19 +35,6 @@ public abstract class MomentHolder {
 			attributes = inheritableHolder.get();
 		}
 		return attributes;
-	}
-	
-	public static MomentAttributes findMomentAttributes(boolean inheritable) {
-		MomentAttributes attributes = getMomentAttributes();
-		if (attributes == null) {
-			setMomentAttributes(new MomentAttributes(), inheritable);
-			attributes = getMomentAttributes();
-		}
-		return attributes;
-	}
-	
-	public static MomentAttributes findMomentAttributes() {
-		return findMomentAttributes(false);
-	}
+	}	
 	
 }

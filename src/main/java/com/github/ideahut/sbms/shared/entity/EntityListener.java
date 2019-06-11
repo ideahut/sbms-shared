@@ -43,7 +43,7 @@ public class EntityListener {
     	if (momentAttributes == null) {
     		return null;
     	}
-    	return momentAttributes.getEntityInterceptorList();
+    	return momentAttributes.getEntityInterceptors();
     }
     
 }

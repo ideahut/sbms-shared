@@ -20,11 +20,11 @@ public class CORSFilter extends OncePerRequestFilter {
 			FilterChain filterChain
 	) throws ServletException, IOException {
 		Environment env = this.getEnvironment();
-		response.setHeader("Access-Control-Allow-Origin", env.getProperty("cors.origin", "*"));
-		response.setHeader("Access-Control-Allow-Credentials", env.getProperty("cors.credentials", "true"));
-		response.setHeader("Access-Control-Allow-Methods", env.getProperty("cors.methods", "GET, POST, OPTIONS"));
-		response.setHeader("Access-Control-Max-Age", env.getProperty("cors.maxage", "0").trim());
-		response.setHeader("Access-Control-Allow-Headers", env.getProperty("cors.headers", ""));
+		response.setHeader("Access-Control-Allow-Origin", env.getProperty("filter.cors.origin", "*"));
+		response.setHeader("Access-Control-Allow-Credentials", env.getProperty("filter.cors.credentials", "true"));
+		response.setHeader("Access-Control-Allow-Methods", env.getProperty("filter.cors.methods", "GET, POST, OPTIONS"));
+		response.setHeader("Access-Control-Max-Age", env.getProperty("filter.cors.maxage", "0").trim());
+		response.setHeader("Access-Control-Allow-Headers", env.getProperty("filter.cors.headers", ""));
 		if("OPTIONS".equalsIgnoreCase(request.getMethod())){
 			response.setStatus(HttpStatus.OK.value());
 			return;

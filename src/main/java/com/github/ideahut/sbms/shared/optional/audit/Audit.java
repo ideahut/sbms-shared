@@ -1,4 +1,4 @@
-package com.github.ideahut.sbms.shared.entity.optional;
+package com.github.ideahut.sbms.shared.optional.audit;
 
 import java.util.Date;
 
@@ -35,7 +35,7 @@ public class Audit extends EntityStringId {
 	private Date entry;
 
 	
-	@Column(name = "auditorid_")
+	@Column(name = "auditor_id_")
 	public String getAuditorId() {
 		return auditorId;
 	}
@@ -44,7 +44,7 @@ public class Audit extends EntityStringId {
 		this.auditorId = auditorId;
 	}
 
-	@Column(name = "auditorname_")
+	@Column(name = "auditor_name_")
 	public String getAuditorName() {
 		return auditorName;
 	}

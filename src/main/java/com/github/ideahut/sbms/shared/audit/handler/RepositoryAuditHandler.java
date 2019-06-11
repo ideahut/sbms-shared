@@ -1,20 +1,19 @@
 package com.github.ideahut.sbms.shared.audit.handler;
 
-import org.springframework.beans.factory.InitializingBean;
-
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.introspect.AnnotatedMember;
 import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
 import com.github.ideahut.sbms.shared.annotation.Auditable;
 import com.github.ideahut.sbms.shared.audit.AuditExecutor.ContentType;
+import com.github.ideahut.sbms.shared.audit.AuditHandler;
 import com.github.ideahut.sbms.shared.audit.AuditObject;
 import com.github.ideahut.sbms.shared.audit.Auditor;
 import com.github.ideahut.sbms.shared.entity.EntityBase;
-import com.github.ideahut.sbms.shared.entity.optional.Audit;
-import com.github.ideahut.sbms.shared.repo.optional.AuditRepository;
+import com.github.ideahut.sbms.shared.optional.audit.Audit;
+import com.github.ideahut.sbms.shared.optional.audit.AuditRepository;
 
-public class RepositoryAuditHandler implements AuditHandler, InitializingBean {
+public class RepositoryAuditHandler implements AuditHandler {
 	
 	private final ObjectMapper objectMapper;
 	
@@ -41,7 +40,7 @@ public class RepositoryAuditHandler implements AuditHandler, InitializingBean {
 	}
 	
 	@Override
-	public void afterPropertiesSet() throws Exception {
+	public void initialize() throws Exception {
 		if (auditRepository == null) {
 			throw new Exception(AuditRepository.class.getName() + " is required");
 		}

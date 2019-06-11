@@ -75,6 +75,7 @@ public class MetadataIntegrator implements Integrator {
 		this.metadata = metadata;
 		this.sessionFactory = sessionFactory;		
 	}
+	
 	@Override
 	public void disintegrate(SessionFactoryImplementor sessionFactory, SessionFactoryServiceRegistry serviceRegistry) {
 		

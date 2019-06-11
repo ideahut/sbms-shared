@@ -22,17 +22,6 @@ public class ServiceExporterResult {
 
 	public Throwable getException() {
 		return exception;
-	}
-
-	@Override
-	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		builder.append("ServiceExporterResult [value=");
-		builder.append(value);
-		builder.append(", exception=");
-		builder.append(exception);
-		builder.append("]");
-		return builder.toString();
 	}	
 	
 }

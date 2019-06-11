@@ -10,7 +10,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
-import com.github.ideahut.sbms.shared.audit.handler.AuditHandler;
 import com.github.ideahut.sbms.shared.moment.MomentAttributes;
 import com.github.ideahut.sbms.shared.moment.MomentHolder;
 
@@ -64,28 +63,28 @@ public class AuditExecutorImpl implements AuditExecutor, InitializingBean {
 		if (momentAttributes == null) {
 			return;
 		}
-		List<AuditObject> mAuditObjectList = momentAttributes.getAuditObjectList();
-		if (mAuditObjectList == null || mAuditObjectList.isEmpty()) {
+		List<AuditObject> mAuditObjects = momentAttributes.getAuditObjects();
+		if (mAuditObjects == null || mAuditObjects.isEmpty()) {
 			return;
 		}
-		List<AuditObject> auditObjectList = new ArrayList<AuditObject>(mAuditObjectList);
-		momentAttributes.setAuditObjectList(null); // Bersihkan daftar object, agar tidak diproses berulang
+		List<AuditObject> auditObjects = new ArrayList<AuditObject>(mAuditObjects);
+		momentAttributes.setAuditObjects(null); // Bersihkan daftar object, agar tidak diproses berulang
 		Auditor momentAuditor = null;
 		Auditor auditor = momentAttributes.getAuditor();		
 		if (auditor != null) {
 			// Dibuat baru, karena akan diproses terpisah. Antisipasi jika sudah di-remove dari holder
 			momentAuditor = new Auditor(auditor.getId(), auditor.getName());
 		}		
-		Runnable task = task(momentAuditor, auditObjectList);
+		Runnable task = task(momentAuditor, auditObjects);
 		taskExecutor.execute(task);
 	}
 	
-	private Runnable task(final Auditor momentAuditor, final List<AuditObject> auditObjectList) {
+	private Runnable task(final Auditor momentAuditor, final List<AuditObject> auditObjects) {
 		return new Runnable() {			
 			@Override
 			public void run() {
-				while (!auditObjectList.isEmpty()) {
-					AuditObject auditObject = auditObjectList.remove(0);
+				while (!auditObjects.isEmpty()) {
+					AuditObject auditObject = auditObjects.remove(0);
 					
 					Object object = auditObject.getObject();
 					if (object == null) {

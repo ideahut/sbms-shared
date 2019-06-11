@@ -1,4 +1,4 @@
-package com.github.ideahut.sbms.shared.entity.optional;
+package com.github.ideahut.sbms.shared.optional.sysparam;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

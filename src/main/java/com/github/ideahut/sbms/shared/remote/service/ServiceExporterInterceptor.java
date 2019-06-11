@@ -4,8 +4,8 @@ import com.github.ideahut.sbms.client.dto.ResponseDto;
 
 public interface ServiceExporterInterceptor {
 
-	public ResponseDto beforeInvoke(ServiceExporterRequest request);
+	public ResponseDto preInvoke(ServiceExporterRequest request) throws Exception;
 	
-	public void afterInvoke(ServiceExporterRequest request, ServiceExporterResult result);
+	public void postInvoke(ServiceExporterRequest request, ServiceExporterResult result) throws Exception;
 	
 }

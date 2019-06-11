@@ -1,18 +1,17 @@
-package com.github.ideahut.sbms.shared.mapper.optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+package com.github.ideahut.sbms.shared.optional.mapper;
 
 import com.github.ideahut.sbms.client.dto.optional.AuditDto;
-import com.github.ideahut.sbms.shared.entity.optional.Audit;
 import com.github.ideahut.sbms.shared.mapper.EntityDtoMapper;
-import com.github.ideahut.sbms.shared.repo.optional.AuditRepository;
+import com.github.ideahut.sbms.shared.optional.audit.Audit;
+import com.github.ideahut.sbms.shared.optional.audit.AuditRepository;
 
-@Component
 public class AuditMapper extends EntityDtoMapper<Audit, AuditDto> {
 	
-	@Autowired
 	private AuditRepository auditRepository;
+	
+	public void setAuditRepository(AuditRepository auditRepository) {
+		this.auditRepository = auditRepository;
+	}
 
 	@Override
 	public AuditDto toDto(Audit entity) {

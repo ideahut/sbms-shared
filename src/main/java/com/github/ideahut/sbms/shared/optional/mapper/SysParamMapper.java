@@ -1,18 +1,17 @@
-package com.github.ideahut.sbms.shared.mapper.optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+package com.github.ideahut.sbms.shared.optional.mapper;
 
 import com.github.ideahut.sbms.client.dto.optional.SysParamDto;
-import com.github.ideahut.sbms.shared.entity.optional.SysParam;
 import com.github.ideahut.sbms.shared.mapper.EntityDtoMapper;
-import com.github.ideahut.sbms.shared.repo.optional.SysParamRepository;
+import com.github.ideahut.sbms.shared.optional.sysparam.SysParam;
+import com.github.ideahut.sbms.shared.optional.sysparam.SysParamRepository;
 
-@Component
 public class SysParamMapper extends EntityDtoMapper<SysParam, SysParamDto> {
 	
-	@Autowired
-	private SysParamRepository sysParamRepo;
+	private SysParamRepository sysParamRepository;
+	
+	public void setSysParamRepository(SysParamRepository sysParamRepository) {
+		this.sysParamRepository = sysParamRepository;
+	}
 
 	@Override
 	public SysParamDto toDto(SysParam entity) {
@@ -37,7 +36,7 @@ public class SysParamMapper extends EntityDtoMapper<SysParam, SysParamDto> {
 		if (null == dto) {
 			return null;
 		}
-		SysParam entity = null != dto.getId() ? sysParamRepo.findById(dto.getId()).orElse(null) : null;
+		SysParam entity = null != dto.getId() ? sysParamRepository.findById(dto.getId()).orElse(null) : null;
 		if (null == entity) entity = new SysParam();
 		entity.setBytes(dto.getBytes());
 		entity.setCreatedAt(dto.getCreatedAt());

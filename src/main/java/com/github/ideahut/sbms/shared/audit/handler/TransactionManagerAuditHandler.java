@@ -25,7 +25,6 @@ import org.hibernate.mapping.Table;
 import org.hibernate.query.NativeQuery;
 import org.hibernate.type.StringType;
 import org.hibernate.type.TimestampType;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.transaction.PlatformTransactionManager;
 
@@ -35,13 +34,14 @@ import com.fasterxml.jackson.databind.introspect.AnnotatedMember;
 import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
 import com.github.ideahut.sbms.shared.annotation.Auditable;
 import com.github.ideahut.sbms.shared.audit.AuditExecutor.ContentType;
+import com.github.ideahut.sbms.shared.audit.AuditHandler;
 import com.github.ideahut.sbms.shared.audit.AuditObject;
 import com.github.ideahut.sbms.shared.audit.Auditor;
 import com.github.ideahut.sbms.shared.entity.EntityBase;
-import com.github.ideahut.sbms.shared.entity.optional.Audit;
 import com.github.ideahut.sbms.shared.hibernate.MetadataIntegrator;
+import com.github.ideahut.sbms.shared.optional.audit.Audit;
 
-public class TransactionManagerAuditHandler implements AuditHandler, InitializingBean {
+public class TransactionManagerAuditHandler implements AuditHandler {
 	
 	private static final String DEFAULT_TABLE_SUFFIX = "audit"; 
 	
@@ -62,6 +62,8 @@ public class TransactionManagerAuditHandler implements AuditHandler, Initializin
 	private PlatformTransactionManager defaultTransactionManager; // yang menghandle entity Audit
 	
 	private MetadataIntegrator defaultIntegrator;
+	
+	private boolean initialize = false;
 	
 	
 	public void setApplicationContext(ApplicationContext applicationContext) {
@@ -99,7 +101,10 @@ public class TransactionManagerAuditHandler implements AuditHandler, Initializin
 	
 
 	@Override
-	public void afterPropertiesSet() throws Exception {
+	public void initialize() throws Exception {
+		if (initialize) {
+			return;
+		}
 		entityAuditTableSuffix = entityAuditTableSuffix != null ? entityAuditTableSuffix.trim() : "";
 		if (createEntityAuditTable && entityAuditTableSuffix.isEmpty()) {
 			entityAuditTableSuffix = DEFAULT_TABLE_SUFFIX;
@@ -107,7 +112,7 @@ public class TransactionManagerAuditHandler implements AuditHandler, Initializin
 		mapTrxManager.clear();
 		List<EntityTableInfo> entityTableInfoList = new ArrayList<EntityTableInfo>();
 		Map<String, PlatformTransactionManager> mapContextTrxManager = applicationContext.getBeansOfType(PlatformTransactionManager.class);
-		for (PlatformTransactionManager transactionManager : mapContextTrxManager.values()) {
+		for (PlatformTransactionManager transactionManager : mapContextTrxManager.values()) {			
 			MetadataIntegrator integrator = MetadataIntegrator.create(transactionManager);
 			Collection<Class<?>> annotatedClasses = integrator.getAnnotatedClasses();
 			if (annotatedClasses.remove(Audit.class)) {
@@ -151,6 +156,7 @@ public class TransactionManagerAuditHandler implements AuditHandler, Initializin
 			}
 		}
 		entityTableInfoList.clear();
+		initialize = true;
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -158,8 +164,7 @@ public class TransactionManagerAuditHandler implements AuditHandler, Initializin
 	public void save(AuditObject auditObject, ContentType contentType) throws Exception {
 		Object object = auditObject.getObject();
 		boolean executed = false;
-		boolean isEntityAudit = object instanceof EntityBase && createEntityAuditTable;
-		if (isEntityAudit) {
+		if (object instanceof EntityBase && createEntityAuditTable) {
 			PlatformTransactionManager transactionManager = auditObject.getTransactionManager();
 			if (transactionManager == null) {
 				transactionManager = defaultTransactionManager;
@@ -347,7 +352,7 @@ public class TransactionManagerAuditHandler implements AuditHandler, Initializin
 		    	if (!exists) {
 			    	Session session = null;
 			    	try {
-			    		String sqlCreate = newTable.sqlCreateString(dstDialect, dstIntegrator.getMetadata(), catalog, schema);
+			    		String sqlCreate = newTable.sqlCreateString(dstDialect, srcIntegrator.getMetadata(), catalog, schema);
 			    		session = dstIntegrator.getSessionFactory().openSession();			    		
 						session.beginTransaction();
 						NativeQuery query = session.createNativeQuery(sqlCreate);
@@ -380,13 +385,14 @@ public class TransactionManagerAuditHandler implements AuditHandler, Initializin
 	private Map<String, ColumnAccessible> getColumnAccessibleObject(Class<?> entity) {
 		Map<String, ColumnAccessible> result = new HashMap<String, ColumnAccessible>();
 		for (Field field : entity.getDeclaredFields()) {
+			field.setAccessible(true);
 			javax.persistence.Column column = field.getAnnotation(javax.persistence.Column.class);
 			javax.persistence.JoinColumn joinColumn = field.getAnnotation(javax.persistence.JoinColumn.class);
 			if (column != null) {
 				String name = column.name();
 				if (name.isEmpty()) {
 					name = field.getName();
-				}
+				}				
 				ColumnAccessible columnAccessible = new ColumnAccessible();
 				columnAccessible.column = field;
 				result.put(name.toLowerCase(), columnAccessible);
@@ -404,6 +410,7 @@ public class TransactionManagerAuditHandler implements AuditHandler, Initializin
 		}
 		
 		for (Method method : entity.getDeclaredMethods()) {
+			method.setAccessible(true);
 			javax.persistence.Column column = method.getAnnotation(javax.persistence.Column.class);
 			javax.persistence.JoinColumn joinColumn = method.getAnnotation(javax.persistence.JoinColumn.class);
 			if (column != null) {
@@ -546,23 +553,19 @@ public class TransactionManagerAuditHandler implements AuditHandler, Initializin
 		Object value = null;
 		if (columnAccessible.column instanceof Field) {
 			Field field = (Field)columnAccessible.column;
-			field.setAccessible(true);
 			value = field.get(object);
 		} 
 		else if (columnAccessible.column instanceof Method) {
 			Method method = (Method)columnAccessible.column;
-			method.setAccessible(true);
 			value = method.invoke(object);
 		}
 		if (columnAccessible.joinColumnId != null && value != null) {
 			if (columnAccessible.joinColumnId instanceof Field) {
 				Field field = (Field)columnAccessible.joinColumnId;
-				field.setAccessible(true);
 				value = field.get(value);
 			} 
 			else if (columnAccessible.joinColumnId instanceof Method) {
 				Method method = (Method)columnAccessible.joinColumnId;
-				method.setAccessible(true);
 				value = method.invoke(value);
 			}
 		}

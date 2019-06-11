@@ -17,9 +17,9 @@ public class MomentAttributes {
 	
 	private Auditor auditor;
 	
-	private List<AuditObject> auditObjectList;
+	private List<AuditObject> auditObjects;
 	
-	private List<EntityInterceptor> entityInterceptorList;
+	private List<EntityInterceptor> entityInterceptors;
 
 	public Locale getLocale() {
 		return locale;
@@ -45,27 +45,27 @@ public class MomentAttributes {
 		this.auditor = auditor;
 	}
 
-	public List<AuditObject> getAuditObjectList() {
-		return auditObjectList;
+	public List<AuditObject> getAuditObjects() {
+		return auditObjects;
 	}
 
-	public void setAuditObjectList(List<AuditObject> auditObjectList) {
-		this.auditObjectList = auditObjectList;
+	public void setAuditObjects(List<AuditObject> auditObjects) {
+		this.auditObjects = auditObjects;
 	}
-	
+
 	public void addAuditObject(AuditObject auditObject) {
 		if (auditObject == null || auditObject.getObject() == null) {
 			return;
 		}
-		if (auditObjectList == null) {
-			auditObjectList = new ArrayList<AuditObject>();			
+		if (auditObjects == null) {
+			auditObjects = new ArrayList<AuditObject>();			
 		}
 		Date entry = auditObject.getEntry();
 		if (entry == null) {
 			entry = new Date();
 		}
 		auditObject.setEntry(entry);		
-		auditObjectList.add(auditObject);
+		auditObjects.add(auditObject);
 	}
 	
 	public void addAuditObject(String action, Object object, Auditor auditor, String info) {
@@ -83,22 +83,22 @@ public class MomentAttributes {
 	public void addAuditObject(String action, Object object) {
 		addAuditObject(action, object, null, null);
 	}
-
-	public List<EntityInterceptor> getEntityInterceptorList() {
-		return entityInterceptorList;
+	
+	public List<EntityInterceptor> getEntityInterceptors() {
+		return entityInterceptors;
 	}
 
-	public void setEntityInterceptorList(List<EntityInterceptor> entityInterceptorList) {
-		this.entityInterceptorList = entityInterceptorList;
+	public void setEntityInterceptors(List<EntityInterceptor> entityInterceptors) {
+		this.entityInterceptors = entityInterceptors;
 	}
 	
 	public void addEntityInterceptor(EntityInterceptor entityInterceptor) {
 		if (entityInterceptor == null) {
 			return;
 		}
-		if (entityInterceptorList == null) {
-			entityInterceptorList = new ArrayList<EntityInterceptor>();
+		if (entityInterceptors == null) {
+			entityInterceptors = new ArrayList<EntityInterceptor>();
 		}
-		entityInterceptorList.add(entityInterceptor);
+		entityInterceptors.add(entityInterceptor);
 	}
 }

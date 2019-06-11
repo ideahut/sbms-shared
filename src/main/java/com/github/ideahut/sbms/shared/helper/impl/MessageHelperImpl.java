@@ -7,15 +7,13 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.MessageSource;
-import org.springframework.web.context.request.RequestAttributes;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.LocaleResolver;
 
 import com.github.ideahut.sbms.client.dto.CodeMessageDto;
 import com.github.ideahut.sbms.shared.helper.MessageHelper;
 import com.github.ideahut.sbms.shared.moment.MomentAttributes;
 import com.github.ideahut.sbms.shared.moment.MomentHolder;
+import com.github.ideahut.sbms.shared.util.RequestUtil;
 
 public class MessageHelperImpl implements MessageHelper, InitializingBean {
 	
@@ -52,7 +50,7 @@ public class MessageHelperImpl implements MessageHelper, InitializingBean {
 
 	@Override
 	public Locale getLocale() {
-		HttpServletRequest request = getRequest();
+		HttpServletRequest request = RequestUtil.getRequest();
 		if (request != null) {
 			return localeResolver.resolveLocale(request);
 		}
@@ -96,15 +94,6 @@ public class MessageHelperImpl implements MessageHelper, InitializingBean {
 	@Override
 	public CodeMessageDto getCodeMessage(String code, String... args) {
 		return getCodeMessage(code, false, args);
-	}
-	
-	
-	private HttpServletRequest getRequest() {
-		RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
-		if (requestAttributes != null) {
-			return ((ServletRequestAttributes) requestAttributes).getRequest();
-		}
-		return null;
 	}	
 
 }
